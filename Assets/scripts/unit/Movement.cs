@@ -9,7 +9,7 @@ public class Movement : MonoBehaviour {
     private ArrayList tilesInRange;
 
     void Awake() {
-        gameManager = GameObject.Find ("GameManager").GetComponent<GameManager>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         tileManager = GameObject.Find("TileManager").GetComponent<TileManager>();
         attr = GetComponent<UnitAttributes>();
     }
