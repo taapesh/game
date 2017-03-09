@@ -3,59 +3,59 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InteractManager : MonoBehaviour {
-	private TileManager tileManager;
-	private GameObject selectedUnit;
-	public int teamId;
+    private TileManager tileManager;
+    private GameObject selectedUnit;
+    public int teamId;
 
-	void Awake () {
-		tileManager = GameObject.Find("TileManager").GetComponent<TileManager>();
-	}
-	
-	void Update () {
-		if (Input.GetMouseButtonDown(0)) {
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			RaycastHit hit = new RaycastHit();
+    void Awake () {
+        tileManager = GameObject.Find("TileManager").GetComponent<TileManager>();
+    }
 
-			if (Physics.Raycast(ray, out hit, Mathf.Infinity)) {
-				Select(hit.collider);
-			}
-		}
-	}
+    void Update () {
+        if (Input.GetMouseButtonDown(0)) {
+            CheckForHit(Input.mousePosition);
+        }
+    }
 
-	private void Select(Collider col) {
-		UnitAttributes attr = col.GetComponent<UnitAttributes>();
+    private void CheckForHit(Vector3 mousePosition) {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit = new RaycastHit();
 
-		if (attr != null) {
-			SelectUnit(col.gameObject, attr);
-		}
-	}
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity)) {
+            Select(hit.collider);
+        }
+    }
 
-	private void SelectUnit(GameObject unit, UnitAttributes attr) {
-		// If selecting same unit, do nothing
-		if (selectedUnit == unit) {
-			return;
-		}
+    private void Select(Collider col) {
+        UnitAttributes attr = col.GetComponent<UnitAttributes>();
 
-		UnselectUnit();
-		selectedUnit = unit;
+        if (attr != null) {
+            SelectUnit(col.gameObject, attr);
+        }
+    }
 
-		// Turn off tiles (visual effect only)
-		tileManager.DeactivateTiles();
+    private void SelectUnit(GameObject unit, UnitAttributes attr) {
+        // If selecting same unit, do nothing
+        if (selectedUnit == unit) {
+            return;
+        }
 
-		if (attr.teamId == teamId) {
-			// Selected friendly unit
-			attr.isSelected = true;
-			attr.GetComponent<Movement>().ToggleMovement();
-		} else {
-			// Selected enemy unit
-		}
-	}
+        UnselectUnit();
+        selectedUnit = unit;
+        tileManager.DeactivateTiles();
 
-	private void UnselectUnit() {
-		if (selectedUnit != null) {
-			UnitAttributes attr = selectedUnit.GetComponent<UnitAttributes>();
-			attr.isSelected = false;
-			// TODO: Visual updates, remove selection ring
-		}
-	}
+        if (attr.teamId == teamId) {
+            attr.isSelected = true;
+            attr.GetComponent<Movement>().ToggleMovement();
+        } else {
+            
+        }
+    }
+
+    private void UnselectUnit() {
+        if (selectedUnit != null) {
+            UnitAttributes attr = selectedUnit.GetComponent<UnitAttributes>();
+            attr.isSelected = false;
+        }
+    }
 }
