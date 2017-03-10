@@ -22,12 +22,12 @@ public class TileManager : MonoBehaviour {
         lenTileArray = tilesArray.Length;
     }
 
-    public ArrayList TilesInRange(int tileId, int range, bool includeCenter=false, bool includeBlocked=false)  {
+    public HashSet<int> TilesInRange(int tileId, int range, bool includeCenter=false, bool includeBlocked=false)  {
         HashSet<int> tileIds = new HashSet<int>();
-        ArrayList tiles = new ArrayList();
+        //HashSet<Transform> tiles = new HashSet<Transform>();
 
         if (range == 0) {
-            return tiles;
+            return tileIds;
         }
 
         if (includeCenter) {
@@ -57,11 +57,12 @@ public class TileManager : MonoBehaviour {
             currentLevel = nextLevel;
         }
 
-        foreach(int id in tileIds) {
-            tiles.Add(tilesArray[id]);
-        }
-
-        return tiles;
+        return tileIds;
+//        foreach(int id in tileIds) {
+//            tiles.Add(tilesArray[id]);
+//        }
+//
+//        return tiles;
     }
 
     private ArrayList GetNeighbors(int id, bool includeBlocked) {
@@ -74,7 +75,7 @@ public class TileManager : MonoBehaviour {
             id - TILES_IN_ROW
         };
 
-		ArrayList tiles = new ArrayList();
+        ArrayList tiles = new ArrayList();
 
         foreach (int idx in neighborIds) {
             if (idx >= 0 && idx < lenTileArray) {
@@ -103,16 +104,16 @@ public class TileManager : MonoBehaviour {
         occupants[tileId] = unit;
     }
 
-    public void ActivateTiles(ArrayList tiles, Material material) {
-        foreach (Transform tile in tiles) {
-            tile.GetComponent<Renderer>().material = material;
-            activeTiles.Add(tile);
+    public void ActivateTiles(HashSet<int> tileIds, Material material) {
+        foreach (int tileId in tileIds) {
+            tilesArray[tileId].GetComponent<Renderer>().material = material;
+            activeTiles.Add(tileId);
         }
     }
 
     public void DeactivateTiles() {
-        foreach(Transform tile in activeTiles) {
-            tile.GetComponent<Renderer>().material = originalMaterial;
+        foreach (int tileId in activeTiles) {
+            tilesArray[tileId].GetComponent<Renderer>().material = originalMaterial;
         }
         activeTiles.Clear();
     }

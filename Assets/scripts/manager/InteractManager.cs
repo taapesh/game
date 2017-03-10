@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class InteractManager : MonoBehaviour {
     private TileManager tileManager;
@@ -35,7 +33,6 @@ public class InteractManager : MonoBehaviour {
     }
 
     private void SelectUnit(GameObject unit, UnitAttributes attr) {
-        // If selecting same unit, do nothing
         if (selectedUnit == unit) {
             return;
         }

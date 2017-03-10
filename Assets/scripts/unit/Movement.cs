@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Movement : MonoBehaviour {
@@ -6,7 +7,7 @@ public class Movement : MonoBehaviour {
     private TileManager tileManager;
     private LayerMask mask = -1;
     private UnitAttributes attr;
-    private ArrayList tilesInRange;
+    private HashSet<int> tilesInRange;
 
     void Awake() {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -52,10 +53,13 @@ public class Movement : MonoBehaviour {
     }
 
     private bool CanMoveHere(Collider col) {
-        return (
-            col.GetComponent<TileAttributes>() != null &&
-            tilesInRange.Contains(col.transform)
-        );
+        TileAttributes attr = col.GetComponent<TileAttributes>();
+
+        if (attr == null) {
+            return false;
+        }
+
+        return tilesInRange.Contains(attr.tileId);
     }
 
     public bool CanMove() {
