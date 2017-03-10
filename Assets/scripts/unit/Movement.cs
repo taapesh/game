@@ -3,71 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Movement : MonoBehaviour {
-    private GameManager gameManager;
-    private TileManager tileManager;
     private LayerMask mask = -1;
     private UnitAttributes attr;
-    private HashSet<int> tilesInRange;
+    private HashSet<int> availableTiles;
 
     void Awake() {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        tileManager = GameObject.Find("TileManager").GetComponent<TileManager>();
         attr = GetComponent<UnitAttributes>();
     }
 
     void Update() {
-        if (!CanMove()) {
+        if (!GameManager.Instance.CanMove(attr)) {
             return;
         }
 
         if (Input.GetMouseButtonDown(1)) {
-            CheckForMovement(Input.mousePosition);
+            AttemptMove(Input.mousePosition);
         }
     }
 
-    private void CheckForMovement(Vector3 mousePosition) {
+    private void AttemptMove(Vector3 mousePosition) {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit = new RaycastHit();
 
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask.value)) {
-            if (CanMoveHere(hit.collider)) {
-                // TODO: Visual effects for turn player
-                tileManager.DeactivateTiles();
-                int tileId = hit.collider.GetComponent<TileAttributes>().tileId;
-                bool moved = gameManager.MoveUnit(attr, tileId);
+            if (TileManager.Instance.IsTile(hit.collider)) {
+                int tileId = TileManager.Instance.GetTileId(hit.collider);
+                bool moved = GameManager.Instance.MoveUnitToTile(attr, tileId);
 
-                if (!moved) {
-
+                if (moved) {
+                    
                 } else {
-
+                    // Tile is out of range or occupied
                 }
+            } else {
+                // Not a tile
             }
         }
     }
 
     public void ToggleMovement() {
-        if (CanMove()) {
-            tilesInRange = tileManager.TilesInRange(attr.tileId, attr.movementRange);
-            tileManager.ActivateTiles(tilesInRange, tileManager.activeMaterial);
-        }
-    }
-
-    private bool CanMoveHere(Collider col) {
-        TileAttributes attr = col.GetComponent<TileAttributes>();
-
-        if (attr == null) {
-            return false;
-        }
-
-        return tilesInRange.Contains(attr.tileId);
-    }
-
-    public bool CanMove() {
-        return (
-            attr.isSelected &&
-            gameManager.IsMyTurn(attr.teamId) &&
-            !attr.hasMoved &&
-            !attr.hasAttacked
-        );
+        
     }
 }

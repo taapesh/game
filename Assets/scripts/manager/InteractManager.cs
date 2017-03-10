@@ -1,13 +1,8 @@
 ﻿using UnityEngine;
 
 public class InteractManager : MonoBehaviour {
-    private TileManager tileManager;
-    private GameObject selectedUnit;
+    private UnitAttributes selectedUnitAttr;
     public int teamId;
-
-    void Awake () {
-        tileManager = GameObject.Find("TileManager").GetComponent<TileManager>();
-    }
 
     void Update () {
         if (Input.GetMouseButtonDown(0)) {
@@ -33,26 +28,27 @@ public class InteractManager : MonoBehaviour {
     }
 
     private void SelectUnit(GameObject unit, UnitAttributes attr) {
-        if (selectedUnit == unit) {
+        if (selectedUnitAttr == attr) {
             return;
         }
 
+        TileManager.Instance.DeactivateTiles();
         UnselectUnit();
-        selectedUnit = unit;
-        tileManager.DeactivateTiles();
 
         if (attr.teamId == teamId) {
             attr.isSelected = true;
-            attr.GetComponent<Movement>().ToggleMovement();
+            GameManager.Instance.ToggleMovement(attr);
         } else {
             
         }
+
+        selectedUnitAttr = attr;
     }
 
     private void UnselectUnit() {
-        if (selectedUnit != null) {
-            UnitAttributes attr = selectedUnit.GetComponent<UnitAttributes>();
-            attr.isSelected = false;
+        if (selectedUnitAttr != null) {
+            selectedUnitAttr.isSelected = false;
+            selectedUnitAttr = null;
         }
     }
 }

@@ -1,32 +1,42 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
-public class GameManager : MonoBehaviour {
-    private TileManager tileManager;
+public class GameManager : Singleton<GameManager> {
     private int turnId = 0;
-
-    void Awake() {
-        tileManager = GameObject.Find("TileManager").GetComponent<TileManager>();
-    }
-
-    void Update() {
-
-    }
+    private HashSet<int> validMovementTiles;
 
     public bool IsMyTurn(int teamId) {
         return turnId == teamId;
     }
 
-    public bool MoveUnit(UnitAttributes attr, int tileId) {
-        if (!tileManager.IsTileAvailable(tileId)) {
+    public void ToggleMovement(UnitAttributes attr) {
+        if (CanMove(attr)) {
+            validMovementTiles = TileManager.Instance.TilesInRange(attr.tileId, attr.movementRange);
+            TileManager.Instance.ActivateTiles(validMovementTiles, TileManager.Instance.moveMaterial);
+        }
+    }
+
+    public bool CanMove(UnitAttributes attr) {
+        return (
+            attr.isSelected &&
+            IsMyTurn(attr.teamId) &&
+            !attr.hasMoved &&
+            !attr.hasAttacked
+        );
+    }
+
+    public bool MoveUnitToTile(UnitAttributes attr, int tileId) {
+        if (!validMovementTiles.Contains(tileId)) {
             return false;
         }
 
-        tileManager.SetOccupant(tileId, attr.gameObject);
-        tileManager.ClearOccupant(attr.tileId);
+        TileManager.Instance.DeactivateTiles();
+        TileManager.Instance.SetOccupant(tileId, attr.gameObject);
+        TileManager.Instance.ClearOccupant(attr.tileId);
         attr.hasMoved = true;
         attr.tileId = tileId;
         UnityEngine.AI.NavMeshAgent nav = attr.GetComponent<UnityEngine.AI.NavMeshAgent>();
-        nav.SetDestination(tileManager.GetTile(tileId).position);
+        nav.SetDestination(TileManager.Instance.GetTile(tileId).position);
         return true;
     }
 }

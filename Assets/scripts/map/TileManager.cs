@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileManager : MonoBehaviour {
+public class TileManager : Singleton<TileManager> {
     private const int   TILES_IN_ROW = 12;
     private int         lenTileArray;
     private ArrayList   activeTiles = new ArrayList();
     public Transform[]  tilesArray;
     public GameObject[] occupants;
     public Material     originalMaterial;
-    public Material     activeMaterial;
+    public Material     moveMaterial;
     public Material     summonMaterial;
 
-    void Awake() {
+    protected override void Awake() {
+        base.Awake();
+
         // Copy component values in production
         int i = 0;
         foreach (Transform child in gameObject.transform) {
@@ -24,7 +26,6 @@ public class TileManager : MonoBehaviour {
 
     public HashSet<int> TilesInRange(int tileId, int range, bool includeCenter=false, bool includeBlocked=false)  {
         HashSet<int> tileIds = new HashSet<int>();
-        //HashSet<Transform> tiles = new HashSet<Transform>();
 
         if (range == 0) {
             return tileIds;
@@ -58,11 +59,6 @@ public class TileManager : MonoBehaviour {
         }
 
         return tileIds;
-//        foreach(int id in tileIds) {
-//            tiles.Add(tilesArray[id]);
-//        }
-//
-//        return tiles;
     }
 
     private ArrayList GetNeighbors(int id, bool includeBlocked) {
@@ -86,6 +82,14 @@ public class TileManager : MonoBehaviour {
         }
 
         return tiles;
+    }
+
+    public bool IsTile(Collider col) {
+        return col.gameObject.tag == "tile";
+    }
+
+    public int GetTileId(Collider col) {
+        return col.GetComponent<TileAttributes>().tileId;
     }
 
     public Transform GetTile(int tileId) {
