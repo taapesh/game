@@ -28,7 +28,7 @@ public class Movement : MonoBehaviour {
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask.value)) {
             if (TileManager.Instance.IsTile(hit.collider)) {
                 int tileId = TileManager.Instance.GetTileId(hit.collider);
-                bool moved = GameManager.Instance.MoveUnitToTile(attr, tileId);
+                bool moved = GameManager.Instance.MoveUnitToTile(gameObject, attr, tileId);
 
                 if (moved) {
                     
@@ -39,9 +39,5 @@ public class Movement : MonoBehaviour {
                 // Not a tile
             }
         }
-    }
-
-    public void ToggleMovement() {
-        
     }
 }

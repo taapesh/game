@@ -8,4 +8,6 @@ public class UnitAttributes : MonoBehaviour {
     public bool hasMoved;
     public bool hasAttacked;
     public int movementRange;
+    public int energyCost;
+    public int moveCost;
 }

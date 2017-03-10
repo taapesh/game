@@ -4,6 +4,20 @@ public class InteractManager : MonoBehaviour {
     private UnitAttributes selectedUnitAttr;
     public int teamId;
 
+    void Awake() {
+        GameManager.OnTurnChanged += OnTurnChanged;
+    }
+
+    protected void OnTurnChanged(int turnId) {
+        if (turnId == teamId) {
+            if (selectedUnitAttr != null && selectedUnitAttr.teamId == teamId) {
+                GameManager.Instance.ToggleMovement(selectedUnitAttr);
+            }
+        } else {
+            TileManager.Instance.DeactivateTiles();
+        }
+    }
+
     void Update () {
         if (Input.GetMouseButtonDown(0)) {
             CheckForHit(Input.mousePosition);

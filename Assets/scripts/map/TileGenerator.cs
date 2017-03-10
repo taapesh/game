@@ -26,7 +26,6 @@ public class TileGenerator : MonoBehaviour {
                 GameObject tileInstance = (GameObject) Instantiate(tilePrefab, spawn, Quaternion.identity);
                 tileInstance.name = "Tile_" + numTilesGenerated;
                 tileInstance.transform.parent = transform;
-                tileInstance.AddComponent<TileAttributes>();
                 tileInstance.GetComponent<TileAttributes>().tileId = numTilesGenerated;
                 currWidth += shiftWidth;
                 numTilesGenerated++;
