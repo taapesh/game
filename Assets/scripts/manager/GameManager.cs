@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager> {
+    private bool locked;
     private GameObject architectA;
     private GameObject architectB;
     private GameObject[] unitsA = new GameObject[25];
@@ -10,17 +11,29 @@ public class GameManager : Singleton<GameManager> {
     private HashSet<int> validMovementTiles;
     private int turnNumber;
     private int turnTimer;
-    private int secondsPerTurn = 3;
+    private int secondsPerTurn = 10;
     private int energyA;
     private int energyB;
     private int turnId = 0;
     public delegate void OnTurnChangedEvent(int turnId);
     public static event OnTurnChangedEvent OnTurnChanged;
 
+    public delegate void OnUnlockEvent();
+    public static event OnUnlockEvent OnUnlock;
+
     protected void Start() {
         turnNumber = 1;
         turnTimer = secondsPerTurn;
         InvokeRepeating("CountdownTurn", 0f, 1f);
+    }
+
+    public void Lock() {
+        locked = true;
+    }
+
+    public void Unlock() {
+        locked = false;
+        OnUnlock();
     }
 
     private void CountdownTurn() {
@@ -99,6 +112,7 @@ public class GameManager : Singleton<GameManager> {
         return (
             attr.isSelected &&
             IsMyTurn(attr.teamId) &&
+            !locked &&
             !attr.hasMoved &&
             !attr.hasAttacked
         );
@@ -109,13 +123,16 @@ public class GameManager : Singleton<GameManager> {
             return false;
         }
 
+        Lock();
+        Transform tile = TileManager.Instance.GetTile(tileId);
+        unit.GetComponent<Movement>().SetDestination(tile);
         TileManager.Instance.DeactivateTiles();
         TileManager.Instance.SetOccupant(tileId, unit);
         TileManager.Instance.ClearOccupant(attr.tileId);
         attr.hasMoved = true;
         attr.tileId = tileId;
         UnityEngine.AI.NavMeshAgent nav = unit.GetComponent<UnityEngine.AI.NavMeshAgent>();
-        nav.SetDestination(TileManager.Instance.GetTile(tileId).position);
+        nav.SetDestination(tile.position);
         return true;
     }
 

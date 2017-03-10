@@ -6,15 +6,26 @@ public class InteractManager : MonoBehaviour {
 
     void Awake() {
         GameManager.OnTurnChanged += OnTurnChanged;
+        GameManager.OnUnlock += OnUnlock;
+    }
+
+    protected void OnUnlock() {
+        if (GameManager.Instance.IsMyTurn(teamId)) {
+            CheckForMovement();
+        }
     }
 
     protected void OnTurnChanged(int turnId) {
-        if (turnId == teamId) {
-            if (selectedUnitAttr != null && selectedUnitAttr.teamId == teamId) {
-                GameManager.Instance.ToggleMovement(selectedUnitAttr);
-            }
+        if (GameManager.Instance.IsMyTurn(teamId)) {
+            CheckForMovement();
         } else {
             TileManager.Instance.DeactivateTiles();
+        }
+    }
+
+    private void CheckForMovement() {
+        if (selectedUnitAttr != null && selectedUnitAttr.teamId == teamId) {
+            GameManager.Instance.ToggleMovement(selectedUnitAttr);
         }
     }
 

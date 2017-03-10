@@ -5,6 +5,7 @@ using UnityEngine;
 public class Movement : MonoBehaviour {
     private LayerMask mask = -1;
     private UnitAttributes attr;
+    private Transform target;
     private HashSet<int> availableTiles;
 
     void Awake() {
@@ -39,5 +40,37 @@ public class Movement : MonoBehaviour {
                 // Not a tile
             }
         }
+    }
+
+    private void CheckForDestination() {
+        Vector3 currentPos = new Vector3(transform.position.x, 0, transform.position.z);
+        Vector3 targetPos = new Vector3(target.position.x, 0, target.position.z);
+
+        float distance = Vector3.Distance(currentPos, targetPos);
+        Debug.Log (distance);
+        if (distance < 0.5f) {
+            CancelInvoke("CheckForDestination");
+            GameManager.Instance.Unlock();
+        }
+    }
+
+    IEnumerator Move() {
+        while (true) {
+            Vector3 currentPos = new Vector3(transform.position.x, 0, transform.position.z);
+            Vector3 targetPos = new Vector3(target.position.x, 0, target.position.z);
+            float distance = Vector3.Distance(currentPos, targetPos);
+
+            if (distance < 0.5f) {
+                StopCoroutine("Move");
+                GameManager.Instance.Unlock();
+            }
+
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    public void SetDestination(Transform tile) {
+        target = tile;
+        StartCoroutine("Move");
     }
 }
