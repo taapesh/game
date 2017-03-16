@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TileManager : Singleton<TileManager> {
-    public GameObject   tilePrefab;
     private const int   NUM_ROWS = 12;
     private const int   TILES_IN_ROW = 12;
+    public GameObject   tilePrefab;
     private ArrayList   activeTiles = new ArrayList();
     public Tile[]       tilesArray;
     public Material     originalMaterial;
