@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 
 public class Player {
-	private ArrayList units;
+	private Unit[] units = new Unit[25];
+	private int maxEnergy;
     private int energy;
 	private bool hasMoved;
 	private int level;
 	private int corruptedResource;
 
-    public ArrayList GetUnits() {
+    public Unit[] GetUnits() {
         return units;
     }
 
@@ -17,14 +18,6 @@ public class Player {
 			unit.SetHasMoved(false);
 			unit.SetHasAttacked(false);
 		}	
-	}
-
-	public bool HasMoved() {
-		return hasMoved;
-	}
-
-	public void SetHasMoved(bool moved) {
-		this.hasMoved = moved;
 	}
 
 	public int GetEnergy() {
@@ -39,7 +32,7 @@ public class Player {
 		return level;
 	}
 
-	public int LevelUp() {
+	public void LevelUp() {
 		this.level++;
 	}
 
@@ -47,7 +40,7 @@ public class Player {
 		return corruptedResource;
 	}
 
-	public int GainCorruptedResouce(int amount) {
+	public void GainCorruptedResouce(int amount) {
 		this.corruptedResource += amount;
 	}
 }

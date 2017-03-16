@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Movement : MonoBehaviour {
+	private IEnumerator moveEnum;
     private LayerMask mask = -1;
-    private UnitAttributes attr;
-    private Transform target;
+    private Unit unit;
     private HashSet<int> availableTiles;
+	private UnityEngine.AI.NavMeshAgent nav;
 
     void Awake() {
-        attr = GetComponent<UnitAttributes>();
+		nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        unit = GetComponent<Unit>();
     }
 
     void Update() {
-        if (!GameManager.Instance.CanMove(attr)) {
+        if (!GameManager.Instance.CanMove(unit)) {
             return;
         }
 
@@ -29,10 +31,11 @@ public class Movement : MonoBehaviour {
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask.value)) {
             if (TileManager.Instance.IsTile(hit.collider)) {
                 int tileId = TileManager.Instance.GetTileId(hit.collider);
-                bool moved = GameManager.Instance.MoveUnitToTile(gameObject, attr, tileId);
 
-                if (moved) {
-                    
+                if (availableTiles.Contains(tileId)) {
+					TileManager.Instance.DeactivateTiles();
+					this.moveEnum = Move(TileManager.Instance.GetTile (tileId));
+					StartCoroutine(this.moveEnum);
                 } else {
                     // Tile is out of range or occupied
                 }
@@ -42,26 +45,17 @@ public class Movement : MonoBehaviour {
         }
     }
 
-    private void CheckForDestination() {
-        Vector3 currentPos = new Vector3(transform.position.x, 0, transform.position.z);
-        Vector3 targetPos = new Vector3(target.position.x, 0, target.position.z);
+	IEnumerator Move(Tile tile) {
+		GameManager.Instance.Lock();
+		GameManager.Instance.MoveUnitToTile(unit, tile);
+		Vector3 target = tile.GetPosition();
+		nav.SetDestination(target);
 
-        float distance = Vector3.Distance(currentPos, targetPos);
-        Debug.Log (distance);
-        if (distance < 0.5f) {
-            CancelInvoke("CheckForDestination");
-            GameManager.Instance.Unlock();
-        }
-    }
-
-    IEnumerator Move() {
         while (true) {
-            Vector3 currentPos = new Vector3(transform.position.x, 0, transform.position.z);
-            Vector3 targetPos = new Vector3(target.position.x, 0, target.position.z);
-            float distance = Vector3.Distance(currentPos, targetPos);
+			float distance = Vector3.Distance(unit.GetPosition(), target);
 
             if (distance < 0.5f) {
-                StopCoroutine("Move");
+				StopCoroutine(this.moveEnum);
                 GameManager.Instance.Unlock();
             }
 
@@ -69,8 +63,10 @@ public class Movement : MonoBehaviour {
         }
     }
 
-    public void SetDestination(Transform tile) {
-        target = tile;
-        StartCoroutine("Move");
+    public void ToggleMovement() {
+        if (GameManager.Instance.CanMove(unit)) {
+            availableTiles = TileManager.Instance.TilesInRange(unit.GetTileId(), unit.GetMovementRange());
+            TileManager.Instance.ActivateTiles(availableTiles, TileManager.Instance.moveMaterial);
+        }
     }
 }

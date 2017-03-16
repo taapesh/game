@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class InteractManager : MonoBehaviour {
-    private UnitAttributes selectedUnitAttr;
+    private Unit selectedUnit;
     public int teamId;
 
     void Awake() {
@@ -24,8 +24,8 @@ public class InteractManager : MonoBehaviour {
     }
 
     private void CheckForMovement() {
-        if (selectedUnitAttr != null && selectedUnitAttr.teamId == teamId) {
-            GameManager.Instance.ToggleMovement(selectedUnitAttr);
+		if (selectedUnit != null && selectedUnit.GetTeamId() == teamId) {
+			selectedUnit.GetMoveComponent().ToggleMovement();
         }
     }
 
@@ -45,35 +45,35 @@ public class InteractManager : MonoBehaviour {
     }
 
     private void Select(Collider col) {
-        UnitAttributes attr = col.GetComponent<UnitAttributes>();
+        Unit unit = col.GetComponent<Unit>();
 
-        if (attr != null) {
-            SelectUnit(col.gameObject, attr);
+        if (unit != null) {
+            SelectUnit(unit);
         }
     }
 
-    private void SelectUnit(GameObject unit, UnitAttributes attr) {
-        if (selectedUnitAttr == attr) {
+	private void SelectUnit(Unit unit) {
+		if (selectedUnit != null && unit.Equals(selectedUnit)) {
             return;
         }
 
         TileManager.Instance.DeactivateTiles();
         UnselectUnit();
 
-        if (attr.teamId == teamId) {
-            attr.isSelected = true;
-            GameManager.Instance.ToggleMovement(attr);
+		if (unit.GetTeamId() == teamId) {
+			unit.SetSelected(true);
+			unit.GetMoveComponent().ToggleMovement();
         } else {
             
         }
 
-        selectedUnitAttr = attr;
+		selectedUnit = unit;
     }
 
     private void UnselectUnit() {
-        if (selectedUnitAttr != null) {
-            selectedUnitAttr.isSelected = false;
-            selectedUnitAttr = null;
+        if (selectedUnit != null) {
+			selectedUnit.SetSelected(false);
+            selectedUnit = null;
         }
     }
 }
