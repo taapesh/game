@@ -24,8 +24,8 @@ public class InteractManager : MonoBehaviour {
     }
 
     private void CheckForMovement() {
-		if (selectedUnit != null && selectedUnit.GetTeamId() == teamId) {
-			selectedUnit.GetMoveComponent().ToggleMovement();
+        if (selectedUnit != null && selectedUnit.GetTeamId() == teamId) {
+            selectedUnit.GetMoveComponent().ToggleMovement();
         }
     }
 
@@ -52,27 +52,27 @@ public class InteractManager : MonoBehaviour {
         }
     }
 
-	private void SelectUnit(Unit unit) {
-		if (selectedUnit != null && unit.Equals(selectedUnit)) {
+    private void SelectUnit(Unit unit) {
+        if (selectedUnit != null && unit.Equals(selectedUnit)) {
             return;
         }
 
         TileManager.Instance.DeactivateTiles();
         UnselectUnit();
 
-		if (unit.GetTeamId() == teamId) {
-			unit.SetSelected(true);
-			unit.GetMoveComponent().ToggleMovement();
+        if (unit.GetTeamId() == teamId) {
+            unit.SetSelected(true);
+            unit.GetMoveComponent().ToggleMovement();
         } else {
-            
+
         }
 
-		selectedUnit = unit;
+        selectedUnit = unit;
     }
 
     private void UnselectUnit() {
         if (selectedUnit != null) {
-			selectedUnit.SetSelected(false);
+            selectedUnit.SetSelected(false);
             selectedUnit = null;
         }
     }

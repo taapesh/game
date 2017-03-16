@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager> {
-	private const int NUM_PLAYERS = 2;
-	private int[] SPAWN_TILES = new int[] { 28, 29 };
+    private const int NUM_PLAYERS = 2;
+    private int[] SPAWN_TILES = new int[] { 28, 29 };
     private bool locked;
     private int turnNumber;
     private int turnTimer;
@@ -17,21 +17,20 @@ public class GameManager : Singleton<GameManager> {
     public delegate void OnUnlockEvent();
     public static event OnUnlockEvent OnUnlock;
 
-	public GameObject playerPrefab;
+    public GameObject playerPrefab;
 
-	void Start() {
-		InitGame();
-	}
+    void Start() {
+        InitGame();
+    }
 
-	void InitGame() {
-		int numTiles = TileManager.Instance.GenerateTiles();
-		TileManager.Instance.InitTileArray(numTiles);
-		SpawnPlayers();
-
-		turnNumber = 1;
-		turnTimer = secondsPerTurn;
-		InvokeRepeating("CountdownTurn", 0f, 1f);
-	}
+    void InitGame() {
+        int numTiles = TileManager.Instance.GenerateTiles();
+        TileManager.Instance.InitTileArray(numTiles);
+        SpawnPlayers();
+        turnNumber = 1;
+        turnTimer = secondsPerTurn;
+        InvokeRepeating("CountdownTurn", 0f, 1f);
+    }
 
     public void Lock() {
         locked = true;
@@ -63,31 +62,31 @@ public class GameManager : Singleton<GameManager> {
 
     public bool CanMove(Unit unit) {
         return (
-			unit.IsSelected() &&
-			IsMyTurn(unit.GetTeamId()) &&
+            unit.IsSelected() &&
+            IsMyTurn(unit.GetTeamId()) &&
             !locked &&
-			!unit.HasMoved() &&
-			!unit.HasAttacked()
+            !unit.HasMoved() &&
+            !unit.HasAttacked()
         );
     }
 
-    public bool MoveUnitToTile(Unit unit, Tile tile) {		
+    public bool MoveUnitToTile(Unit unit, Tile tile) {      
         tile.SetOccupant(unit);
-		tile.ClearOccupant();
-		unit.SetTileId(tile.GetTileId());
-		unit.SetHasMoved(true);      
+        tile.ClearOccupant();
+        unit.SetTileId(tile.GetTileId());
+        unit.SetHasMoved(true);      
         return true;
     }
 
-	public void SpawnPlayers() {
-		for (int i = 0; i < NUM_PLAYERS; ++i) {
-			Tile spawnTile = TileManager.Instance.GetTile(SPAWN_TILES[i]);
-			Vector3 spawnPosition = spawnTile.GetPosition();
-			GameObject player = (GameObject) Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
-			Unit unit = player.GetComponent<Unit>();
-			unit.SetTeamId(i);
-			unit.SetTileId(SPAWN_TILES[i]);
-			spawnTile.SetOccupant(unit);
-		}
-	}
+    public void SpawnPlayers() {
+        for (int i = 0; i < NUM_PLAYERS; ++i) {
+            Tile spawnTile = TileManager.Instance.GetTile(SPAWN_TILES[i]);
+            Vector3 spawnPosition = spawnTile.GetPosition();
+            GameObject player = (GameObject) Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+            Unit unit = player.GetComponent<Unit>();
+            unit.SetTeamId(i);
+            unit.SetTileId(SPAWN_TILES[i]);
+            spawnTile.SetOccupant(unit);
+        }
+    }
 }
