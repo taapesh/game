@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager> {
     private const int NUM_PLAYERS = 2;
-    private int[] SPAWN_TILES = new int[] { 28, 29 };
+    private int[] spawnTiles = new int[] { 28, 29 };
+    private ArrayList players = new ArrayList();
     private bool locked;
+    private Player turnPlayer;
     private int turnNumber;
     private int turnTimer;
     private int secondsPerTurn = 10;
     private int turnId = 0;
+    private HashSet<int> validTiles;
+    private IEnumerator moveEnum;
 
     public delegate void OnTurnChangedEvent(int turnId);
     public static event OnTurnChangedEvent OnTurnChanged;
@@ -49,6 +53,10 @@ public class GameManager : Singleton<GameManager> {
         }
     }
 
+    public void EndTurn() {
+        return;
+    }
+
     private void ChangeTurns() {
         turnNumber++;
         turnTimer = secondsPerTurn;
@@ -64,29 +72,80 @@ public class GameManager : Singleton<GameManager> {
         return (
             unit.IsSelected() &&
             IsMyTurn(unit.GetTeamId()) &&
-            !locked &&
             !unit.HasMoved() &&
-            !unit.HasAttacked()
+            !unit.HasAttacked() &&
+            !locked
         );
     }
 
-    public bool MoveUnitToTile(Unit unit, Tile tile) {      
+    public bool CanSummon(Unit unit, Player player) {
+        return (
+            IsMyTurn(player.GetTeamId()) &&
+            player.EnoughEnergy(unit.GetEnergyCost()) &&
+            player.GetUnitActiveCount(unit) < unit.GetActiveLimit() &&
+            !locked
+        );
+    }
+
+    public bool IsTileValid(int tileId) {
+        return validTiles != null && validTiles.Contains(tileId);    
+    }
+
+    public void ToggleUnitMovement(Unit unit) {
+        if (CanMove(unit)) {
+            this.validTiles = TileManager.Instance
+                .TilesInRange(unit.GetTileId(), unit.GetMovementRange());
+            TileManager.Instance
+                .ActivateTiles(this.validTiles, TileManager.Instance.moveMaterial);
+        }
+    }
+
+    IEnumerator Move(Unit unit, Tile tile) {
+        Vector3 target = tile.GetPosition();
+        unit.SetDestination(target);
+
+        while (true) {
+            float magnitude = (unit.GetPosition() - target).sqrMagnitude;
+
+            if (magnitude <= unit.GetStopDistance()) {
+                StopCoroutine(this.moveEnum);
+                this.Unlock();
+            }
+
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    public void MoveUnitToTile(Unit unit, Tile tile) {
+        this.Lock();
         tile.SetOccupant(unit);
         tile.ClearOccupant();
         unit.SetTileId(tile.GetTileId());
-        unit.SetHasMoved(true);      
-        return true;
+        unit.SetHasMoved(true);
+        this.moveEnum = Move(unit, tile);
+        StartCoroutine(this.moveEnum);
+    }
+
+    public Player GetPlayer(int teamId) {
+        return (Player) players[teamId];
     }
 
     public void SpawnPlayers() {
         for (int i = 0; i < NUM_PLAYERS; ++i) {
-            Tile spawnTile = TileManager.Instance.GetTile(SPAWN_TILES[i]);
-            Vector3 spawnPosition = spawnTile.GetPosition();
-            GameObject player = (GameObject) Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
-            Unit unit = player.GetComponent<Unit>();
+            Tile spawnTile = TileManager.Instance.GetTile(spawnTiles[i]);
+
+            GameObject playerObj = (GameObject) Instantiate(
+                playerPrefab,
+                spawnTile.GetPosition(),
+                Quaternion.identity);
+            
+            Unit unit = playerObj.GetComponent<Unit>();
+            Player player = playerObj.GetComponent<Player>();
+            player.SetTeamId(i);
             unit.SetTeamId(i);
-            unit.SetTileId(SPAWN_TILES[i]);
+            unit.SetTileId(spawnTiles[i]);
             spawnTile.SetOccupant(unit);
+            players.Add(player);
         }
     }
 }

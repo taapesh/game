@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 
 public class CameraScroll : MonoBehaviour {
+    private const string RIGHT  = "right";
+    private const string LEFT   = "left";
+    private const string UP     = "up";
+    private const string DOWN   = "down";
     private Transform follow;
     private const float scrollSpeed     = 50.0f;
     private const float damping         = 7.0f;
@@ -21,25 +25,25 @@ public class CameraScroll : MonoBehaviour {
     void  Update () {
         transform.position = Vector3.Lerp(transform.position, follow.position, damping * Time.deltaTime);
 
-        if (Input.GetKey("right") || Input.GetKey(KeyCode.D)) {
+        if (Input.GetKey(RIGHT) || Input.GetKey(KeyCode.D)) {
             if (follow.position.x < rightBoundary) {
                 follow.Translate(rightDir * Time.deltaTime, Space.World);
             }
         }
 
-        if (Input.GetKey("left") || Input.GetKey(KeyCode.A)) {
+        if (Input.GetKey(LEFT) || Input.GetKey(KeyCode.A)) {
             if (follow.position.x > leftBoundary) {
                 follow.Translate(leftDir * Time.deltaTime, Space.World);
             }
         }
 
-        if (Input.GetKey("up") || Input.GetKey(KeyCode.W)) {
+        if (Input.GetKey(UP) || Input.GetKey(KeyCode.W)) {
             if (follow.position.z < topBoundary) {
                 follow.Translate(upDir * Time.deltaTime, Space.World);
             }
         }
 
-        if (Input.GetKey("down") || Input.GetKey(KeyCode.S)) {
+        if (Input.GetKey(DOWN) || Input.GetKey(KeyCode.S)) {
             if (follow.position.z > bottomBoundary) {
                 follow.Translate(downDir * Time.deltaTime, Space.World);
             }

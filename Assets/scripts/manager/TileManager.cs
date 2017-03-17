@@ -85,11 +85,11 @@ public class TileManager : Singleton<TileManager> {
     }
 
     public bool IsTile(Collider col) {
-        return col.gameObject.tag == "tile";
+        return col.tag == "tile";
     }
 
-    public int GetTileId(Collider col) {
-        return col.GetComponent<Tile>().GetTileId();
+    public Tile GetTile(Collider col) {
+        return col.GetComponent<Tile>();
     }
 
     public Tile GetTile(int tileId) {

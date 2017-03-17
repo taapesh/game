@@ -1,13 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-public class Player {
+public class Player : MonoBehaviour {
     private Unit[] units = new Unit[25];
+    private Unit[] createUnits = new Unit[6];
+    private Dictionary<int, int> activeUnitsMap = new Dictionary<int, int>();
+    private int teamId;
     private int maxEnergy;
     private int energy;
     private bool hasMoved;
     private int level;
     private int corruptedResource;
+
+    public void SetTeamId(int teamId) {
+        this.teamId = teamId;
+    }
+
+    public int GetTeamId() {
+        return teamId;
+    }
 
     public Unit[] GetUnits() {
         return units;
@@ -28,6 +40,10 @@ public class Player {
         this.energy = energy;
     }
 
+    public bool EnoughEnergy(int energy) {
+        return this.energy >= energy;
+    }
+
     public int GetLevel() {
         return level;
     }
@@ -42,5 +58,9 @@ public class Player {
 
     public void GainCorruptedResouce(int amount) {
         this.corruptedResource += amount;
+    }
+
+    public int GetUnitActiveCount(Unit unit) {
+        return activeUnitsMap[unit.GetId()];
     }
 }

@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-public class Structure {
+public class Structure : MonoBehaviour {
     private int damage;
     private int corruption;
     private bool isCorrupted;

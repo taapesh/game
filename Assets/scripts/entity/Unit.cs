@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Unit : MonoBehaviour {
+    private UnityEngine.AI.NavMeshAgent nav;
     private int teamId;
     private int unitId;
     private int objectId;
@@ -11,7 +12,9 @@ public class Unit : MonoBehaviour {
     private bool hasAttacked;
     private bool isDead;
     private bool isSelected;
-    private Movement moveComponent;
+    public float stopDistance;
+    public string name;
+    public int id;
     public int health;
     public int maxHealth;
     public int movementRange;
@@ -19,11 +22,27 @@ public class Unit : MonoBehaviour {
     public int energyCost;
 
     void Awake() {
-        moveComponent = GetComponent<Movement>();
+        nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
+    }
+
+    public bool IsFriendly(int teamId) {
+        return this.teamId == teamId;
+    }
+
+    public void SetDestination(Vector3 target) {
+        nav.SetDestination(target);
+    }
+
+    public float GetStopDistance() {
+        return stopDistance;
     }
 
     public void SetSelected(bool selected) {
         this.isSelected = selected;
+    }
+
+    public int GetId() {
+        return id;    
     }
 
     public bool IsSelected() {
@@ -90,6 +109,10 @@ public class Unit : MonoBehaviour {
         return activeLimit;
     }
 
+    public int GetEnergyCost() {
+        return energyCost;
+    }
+
     public bool Equals(Unit unit) {
         return (
             unit.GetTeamId() == GetTeamId() &&
@@ -99,9 +122,5 @@ public class Unit : MonoBehaviour {
 
     public Vector3 GetPosition() {
         return new Vector3(transform.position.x, 0, transform.position.z);
-    }
-
-    public Movement GetMoveComponent() {
-        return moveComponent;
     }
 }
