@@ -5,9 +5,9 @@ using UnityEngine;
 public class TileManager : Singleton<TileManager> {
     private const int   NUM_ROWS = 12;
     private const int   TILES_IN_ROW = 12;
-    public GameObject   tilePrefab;
     private ArrayList   activeTiles = new ArrayList();
-    public Tile[]       tilesArray;
+    private Tile[]      tilesArray;
+    public GameObject   tilePrefab;
     public Material     originalMaterial;
     public Material     moveMaterial;
     public Material     summonMaterial;

@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
     private Unit[] units = new Unit[25];
-    private Unit[] createUnits = new Unit[6];
-    private Dictionary<int, int> activeUnitsMap = new Dictionary<int, int>();
+    private Dictionary<UnitData, int> activeUnitsMap = new Dictionary<UnitData, int>();
     private int teamId;
     private int maxEnergy;
     private int energy;
-    private bool hasMoved;
     private int level;
     private int corruptedResource;
+
+    public void InitPlayer() {
+        // Initialize player
+        this.energy = 10;
+    }
 
     public void SetTeamId(int teamId) {
         this.teamId = teamId;
@@ -44,6 +47,10 @@ public class Player : MonoBehaviour {
         return this.energy >= energy;
     }
 
+    public void SpendEnergy(int amount) {
+        this.energy -= amount;
+    }
+
     public int GetLevel() {
         return level;
     }
@@ -60,7 +67,11 @@ public class Player : MonoBehaviour {
         this.corruptedResource += amount;
     }
 
-    public int GetUnitActiveCount(Unit unit) {
-        return activeUnitsMap[unit.GetId()];
+    public int GetUnitActiveCount(UnitData unit) {
+        if (activeUnitsMap[unit] == null) {
+            Debug.Log("LOL");
+            return 10;
+        }
+        return 10;
     }
 }

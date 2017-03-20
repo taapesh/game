@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HotkeyManager : MonoBehaviour {
+    private GameManager gm;
     public int teamId;
 
-    void Update () {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            GameManager.Instance
-                .GetPlayer(teamId);
-                //.Something()
-        }
+    void Awake() {
+        this.gm = GameManager.Instance;    
     }
 }

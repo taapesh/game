@@ -13,8 +13,7 @@ public class Unit : MonoBehaviour {
     private bool isDead;
     private bool isSelected;
     public float stopDistance;
-    public string name;
-    public int id;
+    public string unitName;
     public int health;
     public int maxHealth;
     public int movementRange;
@@ -39,10 +38,6 @@ public class Unit : MonoBehaviour {
 
     public void SetSelected(bool selected) {
         this.isSelected = selected;
-    }
-
-    public int GetId() {
-        return id;    
     }
 
     public bool IsSelected() {
@@ -122,5 +117,14 @@ public class Unit : MonoBehaviour {
 
     public Vector3 GetPosition() {
         return new Vector3(transform.position.x, 0, transform.position.z);
+    }
+
+    public void SetUnitData(UnitData data) {
+        this.unitName = data.name;
+        this.maxHealth = data.maxHealth;
+        this.health = this.maxHealth;
+        this.movementRange = data.movementRange;
+        this.activeLimit = data.activeLimit;
+        this.energyCost = data.energyCost;
     }
 }

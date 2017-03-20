@@ -5,25 +5,26 @@ public class InteractManager : MonoBehaviour {
     private const int RIGHT_MOUSE_BUTTON = 1;
     private LayerMask mask = -1;
     private Unit selectedUnit;
+    private GameManager gm;
+    private UserData user;
     public int teamId;
 
-    private enum PlayerState {
+    public enum PlayerState {
         CreateReady,
         MoveReady,
-        AttackReady,
+        AbilityReady,
         Default
     };
 
-    private PlayerState playerState;
+    private PlayerState playerState = PlayerState.Default;
 
     void Awake() {
-        SetPlayerState(PlayerState.Default);
+        this.gm = GameManager.Instance;
         GameManager.OnTurnChanged += OnTurnChanged;
         GameManager.OnUnlock += OnUnlock;
     }
 
     void Update () {
-        // Determine what was clicked on
         if (Input.GetMouseButtonDown(RIGHT_MOUSE_BUTTON)) {
             Collider col = CheckForHit(Input.mousePosition);
 
@@ -39,7 +40,7 @@ public class InteractManager : MonoBehaviour {
             Collider col = CheckForHit(Input.mousePosition);
 
             if (col != null) {
-                if (GetPlayerState() == PlayerState.AttackReady) {
+                if (GetPlayerState() == PlayerState.AbilityReady) {
                     
                 } else {
                     AttemptSelect(col);
@@ -48,7 +49,29 @@ public class InteractManager : MonoBehaviour {
         }
     }
 
-    private void SetPlayerState(PlayerState playerState) {
+    void OnGUI() {
+        if (gm.GetBuild().HasSlot(1) && GUI.Button(new Rect(10, Screen.height - 80, 60, 60),
+            gm.GetBuild().GetUnit(1).name)) {
+            
+            if (gm.CanSummon(teamId, 1)) {
+                Debug.Log("Creating " + gm.GetBuild().GetUnit(1).name);
+            } else {
+                Debug.Log("Can't create unit");
+            }
+        }
+
+        if (gm.GetBuild().HasSlot(2) && GUI.Button(new Rect(100, Screen.height - 80, 60, 60),
+            gm.GetBuild().GetUnit(2).name)) {
+            
+            if (gm.CanSummon(teamId, 1)) {
+                Debug.Log("Creating " + gm.GetBuild().GetUnit(2).name);
+            } else {
+                Debug.Log("Can't create unit");
+            }
+        }
+    }
+
+    public void SetPlayerState(PlayerState playerState) {
         this.playerState = playerState;
     }
 
@@ -56,6 +79,10 @@ public class InteractManager : MonoBehaviour {
         return this.playerState;
     }
 
+    /*
+     * Perform raycast and return collider if there was a hit
+     * Otherwise, return null
+     */
     private Collider CheckForHit(Vector3 mousePosition) {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit = new RaycastHit();
@@ -67,10 +94,14 @@ public class InteractManager : MonoBehaviour {
     }
 
     private void AttemptMove(Collider col) {
+        // Check if object is tile
         if (TileManager.Instance.IsTile(col)) {
+            // Get tile object
             Tile tile = TileManager.Instance.GetTile(col);
 
+            // Check if tile is valid
             if (GameManager.Instance.IsTileValid(tile.GetTileId())) {
+                // Move unit to tile
                 GameManager.Instance.MoveUnitToTile(selectedUnit, tile);
                 TileManager.Instance.DeactivateTiles();
             }
