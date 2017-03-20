@@ -13,13 +13,13 @@ public class TileManager : Singleton<TileManager> {
     public Material     summonMaterial;
 
     public void InitTileArray(int numTiles) {
-        tilesArray = new Tile[numTiles];
+        this.tilesArray = new Tile[numTiles];
         int i = 0;
 
         foreach (Transform tileObj in transform) {
             Tile tile = tileObj.GetComponent<Tile>();
-            tilesArray[i] = tile;
-            tilesArray[i].SetTileId(i);
+            this.tilesArray[i] = tile;
+            this.tilesArray[i].SetTileId(i);
             i++;
         }
     }
@@ -74,7 +74,7 @@ public class TileManager : Singleton<TileManager> {
         ArrayList tiles = new ArrayList();
 
         foreach (int idx in neighborIds) {
-            if (idx >= 0 && idx < tilesArray.Length) {
+            if (idx >= 0 && idx < this.tilesArray.Length) {
                 if (includeBlocked || IsTileAvailable(idx)) {
                     tiles.Add(idx);
                 }
@@ -93,31 +93,31 @@ public class TileManager : Singleton<TileManager> {
     }
 
     public Tile GetTile(int tileId) {
-        return tilesArray[tileId];
+        return this.tilesArray[tileId];
     }
 
     public bool IsTileAvailable(int tileId) {
-        return tilesArray[tileId].IsAvailable();
+        return this.tilesArray[tileId].IsAvailable();
     }
 
     public void ActivateTiles(HashSet<int> tileIds, Material material) {
         foreach (int tileId in tileIds) {
-            tilesArray[tileId].SetMaterial(material);
-            activeTiles.Add(tileId);
+            this.tilesArray[tileId].SetMaterial(material);
+            this.activeTiles.Add(tileId);
         }
     }
 
     public void DeactivateTiles() {
         foreach (int tileId in activeTiles) {
-            tilesArray[tileId].SetMaterial(originalMaterial);
+            this.tilesArray[tileId].SetMaterial(this.originalMaterial);
         }
-        activeTiles.Clear();
+        this.activeTiles.Clear();
     }
 
     public int GenerateTiles() {
         //Debug.Log ("Tile size: " +  tilePrefab.GetComponent<Renderer>().bounds.size);
 
-        Vector3 tileBounds = tilePrefab.GetComponent<Renderer>().bounds.size;
+        Vector3 tileBounds = this.tilePrefab.GetComponent<Renderer>().bounds.size;
         float shiftWidth = tileBounds.x;
         float shiftHeight = (tileBounds.z / 2.0f) + (tileBounds.z / 4.0f);
 
@@ -131,7 +131,7 @@ public class TileManager : Singleton<TileManager> {
 
             for (int j = 0; j < numTiles; ++j) {
                 Vector3 spawn = new Vector3(currWidth, .01f, currHeight);
-                GameObject tileInstance = (GameObject) Instantiate(tilePrefab, spawn, Quaternion.identity);
+                GameObject tileInstance = (GameObject) Instantiate(this.tilePrefab, spawn, Quaternion.identity);
                 tileInstance.name = "Tile_" + numTilesGenerated;
                 tileInstance.transform.parent = transform;
                 currWidth += shiftWidth;

@@ -3,10 +3,10 @@
 public class InteractManager : MonoBehaviour {
     private const int LEFT_MOUSE_BUTTON = 0;
     private const int RIGHT_MOUSE_BUTTON = 1;
-    private LayerMask mask = -1;
-    private Unit selectedUnit;
     private GameManager gm;
+    private LayerMask mask = -1;
     private UserData user;
+    private Unit selectedUnit;
     public int teamId;
 
     public enum PlayerState {
@@ -20,8 +20,8 @@ public class InteractManager : MonoBehaviour {
 
     void Awake() {
         this.gm = GameManager.Instance;
-        GameManager.OnTurnChanged += OnTurnChanged;
-        GameManager.OnUnlock += OnUnlock;
+        GameManager.OnTurnChanged += this.OnTurnChanged;
+        GameManager.OnUnlock += this.OnUnlock;
     }
 
     void Update () {
@@ -29,9 +29,12 @@ public class InteractManager : MonoBehaviour {
             Collider col = CheckForHit(Input.mousePosition);
 
             if (col != null) {
-                if (GetPlayerState() == PlayerState.MoveReady) {
-                    // Check for tile hit
-                    AttemptMove(col);
+                switch (GetPlayerState()) {
+                    case PlayerState.MoveReady:
+                        AttemptMove(col);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -40,31 +43,40 @@ public class InteractManager : MonoBehaviour {
             Collider col = CheckForHit(Input.mousePosition);
 
             if (col != null) {
-                if (GetPlayerState() == PlayerState.AbilityReady) {
-                    
-                } else {
-                    AttemptSelect(col);
+                switch (GetPlayerState()) {
+                    case PlayerState.CreateReady:
+                        AttemptCreate(col);
+                        break;
+                    case PlayerState.AbilityReady:
+                        break;
+                    default:
+                        AttemptSelect(col);
+                        break;
                 }
             }
         }
     }
 
     void OnGUI() {
-        if (gm.GetBuild().HasSlot(1) && GUI.Button(new Rect(10, Screen.height - 80, 60, 60),
-            gm.GetBuild().GetUnit(1).name)) {
-            
-            if (gm.CanSummon(teamId, 1)) {
-                Debug.Log("Creating " + gm.GetBuild().GetUnit(1).name);
+        if (this.gm.GetBuild().HasSlot(1) && GUI.Button(new Rect(10, Screen.height - 80, 60, 60),
+            this.gm.GetBuild().GetUnit(1).name)) {
+
+            if (this.gm.CanSummon(this.teamId, 1)) {
+                Debug.Log("Create unit: " + this.gm.GetBuild().GetUnit(1).name);
+                this.gm.ToggleCreateUnit(this.teamId);
+                SetPlayerState(PlayerState.CreateReady);
             } else {
                 Debug.Log("Can't create unit");
             }
         }
 
-        if (gm.GetBuild().HasSlot(2) && GUI.Button(new Rect(100, Screen.height - 80, 60, 60),
-            gm.GetBuild().GetUnit(2).name)) {
+        if (this.gm.GetBuild().HasSlot(2) && GUI.Button(new Rect(100, Screen.height - 80, 60, 60),
+            this.gm.GetBuild().GetUnit(2).name)) {
             
-            if (gm.CanSummon(teamId, 1)) {
-                Debug.Log("Creating " + gm.GetBuild().GetUnit(2).name);
+            if (this.gm.CanSummon(teamId, 1)) {
+                Debug.Log("Create unit: " + this.gm.GetBuild().GetUnit(2).name);
+                this.gm.ToggleCreateUnit(this.teamId);
+                SetPlayerState(PlayerState.CreateReady);
             } else {
                 Debug.Log("Can't create unit");
             }
@@ -100,15 +112,29 @@ public class InteractManager : MonoBehaviour {
             Tile tile = TileManager.Instance.GetTile(col);
 
             // Check if tile is valid
-            if (GameManager.Instance.IsTileValid(tile.GetTileId())) {
+            if (this.gm.IsTileValid(tile.GetTileId())) {
                 // Move unit to tile
-                GameManager.Instance.MoveUnitToTile(selectedUnit, tile);
+                this.gm.MoveUnitToTile(selectedUnit, tile);
                 TileManager.Instance.DeactivateTiles();
+                SetPlayerState(PlayerState.Default);
             }
         } else {
             // Not tile
         }
     }
+
+    private void AttemptCreate(Collider col) {
+        if (TileManager.Instance.IsTile(col)) {
+            Tile tile = TileManager.Instance.GetTile(col);
+
+            if (this.gm.IsTileValid(tile.GetTileId())) {
+                // Create unit on tile
+                //GameManager.Instance.CreateUnit(teamId, 1);
+                TileManager.Instance.DeactivateTiles();
+            }
+        }
+    }
+
 
     private void AttemptSelect(Collider col) {
         Unit unit = col.GetComponent<Unit>();
@@ -120,7 +146,7 @@ public class InteractManager : MonoBehaviour {
     }
 
     private void SelectUnit(Unit unit) {
-        if (selectedUnit != null && unit.Equals(selectedUnit)) {
+        if (this.selectedUnit != null && unit.Equals(this.selectedUnit)) {
             // Selected same unit, do nothing
             return;
         }
@@ -128,41 +154,41 @@ public class InteractManager : MonoBehaviour {
         TileManager.Instance.DeactivateTiles();
         UnselectUnit();
 
-        if (unit.IsFriendly(teamId)) {
+        if (unit.IsFriendly(this.teamId)) {
             // Selected friendly unit
             unit.SetSelected(true);
-            selectedUnit = unit;
+            this.selectedUnit = unit;
             CheckForMovement();
         } else {
             // Selected hostile unit
-            selectedUnit = unit;
+            this.selectedUnit = unit;
         }
     }
 
     private void UnselectUnit() {
-        if (selectedUnit != null) {
-            selectedUnit.SetSelected(false);
-            selectedUnit = null;
+        if (this.selectedUnit != null) {
+            this.selectedUnit.SetSelected(false);
+            this.selectedUnit = null;
         }
     }
 
     private void CheckForMovement() {
-        if (selectedUnit != null && selectedUnit.IsFriendly(teamId)) {
-            if (GameManager.Instance.CanMove(selectedUnit)) {
-                GameManager.Instance.ToggleUnitMovement(selectedUnit);
+        if (this.selectedUnit != null && this.selectedUnit.IsFriendly(this.teamId)) {
+            if (this.gm.CanMove(selectedUnit)) {
+                this.gm.ToggleUnitMovement(this.selectedUnit);
                 SetPlayerState(PlayerState.MoveReady);
             }
         }
     }
 
     protected void OnUnlock() {
-        if (GameManager.Instance.IsMyTurn(teamId)) {
+        if (this.gm.IsMyTurn(this.teamId)) {
             CheckForMovement();
         }
     }
 
     protected void OnTurnChanged(int turnId) {
-        if (GameManager.Instance.IsMyTurn(teamId)) {
+        if (this.gm.IsMyTurn(this.teamId)) {
             CheckForMovement();
         } else {
             TileManager.Instance.DeactivateTiles();

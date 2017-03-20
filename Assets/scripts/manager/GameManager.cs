@@ -118,12 +118,25 @@ public class GameManager : Singleton<GameManager> {
     }
 
     public void ToggleUnitMovement(Unit unit) {
-        if (CanMove(unit)) {
-            this.validTiles = TileManager.Instance
-                .TilesInRange(unit.GetTileId(), unit.GetMovementRange());
-            TileManager.Instance
-                .ActivateTiles(this.validTiles, TileManager.Instance.moveMaterial);
-        }
+        TileManager.Instance.DeactivateTiles();
+
+        this.validTiles = TileManager.Instance
+            .TilesInRange(unit.GetTileId(), unit.GetMovementRange());
+        TileManager.Instance
+            .ActivateTiles(this.validTiles, TileManager.Instance.moveMaterial);
+    }
+
+    public void ToggleCreateUnit(int teamId) {
+        TileManager.Instance.DeactivateTiles();
+
+        Player player = GetPlayer(teamId);
+        Unit unit = player.GetUnitComponent();
+
+        this.validTiles = TileManager.Instance
+            .TilesInRange(unit.GetTileId(), player.GetCreateRange());
+        TileManager.Instance
+            .ActivateTiles(this.validTiles, TileManager.Instance.summonMaterial);
+            
     }
 
     IEnumerator Move(Unit unit, Tile tile) {

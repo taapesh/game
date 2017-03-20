@@ -6,15 +6,15 @@ public class Harvester {
     private int maxHealth;
     private int movementRange;
 
-    public int GetMovementRange() {
-        return movementRange;
-    }
-
     public int GetHealth() {
-        return health;
+        return this.health;
     }
 
     public int GetMaxHealth() {
-        return maxHealth;
+        return this.maxHealth;
+    }
+
+    public int GetMovementRange() {
+        return this.movementRange;
     }
 }

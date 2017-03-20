@@ -16,7 +16,7 @@ public class MainController : Singleton<MainController> {
     }
 
     public UserData GetUser() {
-        return user;
+        return this.user;
     }
 
     void OnLoginSuccess() {
@@ -33,16 +33,16 @@ public class MainController : Singleton<MainController> {
 
         // Add unit data to unit dictionary
         foreach(UnitData data in JsonHelper.GetJsonArray<UnitData>(unitJson.text)) {
-            units.Add(data.id, data);
+            this.units.Add(data.id, data);
         }
 
         // Load user data
         this.user = JsonUtility.FromJson<UserData>(userJson.text);
 
         // Load player builds data
-        foreach(Build build in user.GetBuilds()) {
+        foreach(Build build in this.user.GetBuilds()) {
             foreach(UnitChoice choice in build.GetUnitChoices()) {
-                UnitData data = units[choice.GetUnitId()];
+                UnitData data = this.units[choice.GetUnitId()];
                 build.AddUnitData(data, choice.GetSlotId());
             }
         }
@@ -61,6 +61,11 @@ public class MainController : Singleton<MainController> {
     }
 
     public void StartGame() {
-        // Start matchmaking, load unit prefabs, load game scene
+        // start matchmaking
+        // load unit prefabs
+        // load game scene
+        // set gamemanager variables
+        // initialize game
+        // start game
     }
 }

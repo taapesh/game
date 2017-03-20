@@ -5,15 +5,28 @@ using UnityEngine;
 public class Player : MonoBehaviour {
     private Unit[] units = new Unit[25];
     private Dictionary<UnitData, int> activeUnitsMap = new Dictionary<UnitData, int>();
+    private Unit unitComponent;
     private int teamId;
     private int maxEnergy;
     private int energy;
     private int level;
     private int corruptedResource;
+    private int createRange;
 
     public void InitPlayer() {
+        // Placeholder stats
         // Initialize player
         this.energy = 10;
+        this.createRange = 2;
+        this.unitComponent = GetComponent<Unit>();
+    }
+
+    public Unit GetUnitComponent() {
+        return this.unitComponent;
+    }
+
+    public int GetCreateRange() {
+        return this.createRange;
     }
 
     public void SetTeamId(int teamId) {
@@ -21,22 +34,18 @@ public class Player : MonoBehaviour {
     }
 
     public int GetTeamId() {
-        return teamId;
-    }
-
-    public Unit[] GetUnits() {
-        return units;
+        return this.teamId;
     }
 
     public void ResetUnits() {
-        foreach (Unit unit in units) {
+        foreach (Unit unit in this.units) {
             unit.SetHasMoved(false);
             unit.SetHasAttacked(false);
         }
     }
 
     public int GetEnergy() {
-        return energy;
+        return this.energy;
     }
 
     public void SetEnergy(int energy) {
@@ -52,7 +61,7 @@ public class Player : MonoBehaviour {
     }
 
     public int GetLevel() {
-        return level;
+        return this.level;
     }
 
     public void LevelUp() {
@@ -60,7 +69,7 @@ public class Player : MonoBehaviour {
     }
 
     public int GetCorruptedResource() {
-        return corruptedResource;
+        return this.corruptedResource;
     }
 
     public void GainCorruptedResouce(int amount) {
@@ -68,10 +77,10 @@ public class Player : MonoBehaviour {
     }
 
     public int GetUnitActiveCount(UnitData unit) {
-        if (activeUnitsMap.ContainsKey(unit)) {
-            return activeUnitsMap[unit];
+        if (this.activeUnitsMap.ContainsKey(unit)) {
+            return this.activeUnitsMap[unit];
         } else {
-            activeUnitsMap[unit] = 0;
+            this.activeUnitsMap[unit] = 0;
             return 0;
         }
     }

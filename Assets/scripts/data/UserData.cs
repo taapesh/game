@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System;
+﻿using System;
 
 [Serializable]
 public class UserData {
@@ -11,26 +9,26 @@ public class UserData {
     public Build[] builds;
 
     public string GetUsername() {
-        return username;
+        return this.username;
     }
 
     public int GetLevel() {
-        return level;
-    }
-
-    public Build GetBuild(int index) {
-        return builds[index];
-    }
-
-    public Build[] GetBuilds() {
-        return builds;
-    }
-
-    public Build GetActiveBuild() {
-        return builds[activeBuild];
+        return this.level;
     }
 
     public int GetUnitLimit() {
-        return unitLimit;
+        return this.unitLimit;
+    }
+
+    public Build[] GetBuilds() {
+        return this.builds;
+    }
+
+    public Build GetBuild(int index) {
+        return this.builds[index];
+    }
+
+    public Build GetActiveBuild() {
+        return this.builds[activeBuild];
     }
 }

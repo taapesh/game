@@ -10,14 +10,14 @@ public class Structure : MonoBehaviour {
     private int armor;
 
     public bool IsCorrupted() {
-        return isCorrupted;
+        return this.isCorrupted;
     }
 
     public bool IsInvulnerable() {
-        return isInvulnerable;
+        return this.isInvulnerable;
     }
 
     public int GetArmor() {
-        return armor;
+        return this.armor;
     }
 }

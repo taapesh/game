@@ -9,12 +9,12 @@ public class Tile : MonoBehaviour {
     private Renderer _renderer;
 
     void Awake() {
-        position = new Vector3(transform.position.x, 0, transform.position.z);
-        _renderer = GetComponent<Renderer>();
+        this.position = new Vector3(transform.position.x, 0, transform.position.z);
+        this._renderer = GetComponent<Renderer>();
     }
 
     public int GetTileId() {
-        return tileId;
+        return this.tileId;
     }
 
     public void SetTileId(int tileId) {
@@ -22,26 +22,26 @@ public class Tile : MonoBehaviour {
     }
 
     public bool IsAvailable() {
-        return occupant == null; 
+        return this.occupant == null; 
     }
 
     public Unit GetOccupant() {
-        return occupant;
+        return this.occupant;
     }
 
     public void SetOccupant(Unit unit) {
-        occupant = unit;
+        this.occupant = unit;
     }
 
     public void ClearOccupant() {
-        occupant = null;
+        this.occupant = null;
     }
 
     public Vector3 GetPosition() {
-        return position;
+        return this.position;
     }
 
     public void SetMaterial(Material material) {
-        _renderer.material = material;
+        this._renderer.material = material;
     }
 }

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour {
     private UnityEngine.AI.NavMeshAgent nav;
+    private Transform _transform;
     private int teamId;
     private int unitId;
-    private int objectId;
     private int tileId;
     private bool hasMoved;
     private bool hasAttacked;
@@ -21,7 +21,8 @@ public class Unit : MonoBehaviour {
     public int energyCost;
 
     void Awake() {
-        nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        this._transform = transform;
+        this.nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
     }
 
     public bool IsFriendly(int teamId) {
@@ -33,7 +34,7 @@ public class Unit : MonoBehaviour {
     }
 
     public float GetStopDistance() {
-        return stopDistance;
+        return this.stopDistance;
     }
 
     public void SetSelected(bool selected) {
@@ -41,11 +42,11 @@ public class Unit : MonoBehaviour {
     }
 
     public bool IsSelected() {
-        return isSelected;
+        return this.isSelected;
     }
 
     public int GetUnitId() {
-        return unitId;
+        return this.unitId;
     }
 
     public void SetUnitId(int unitId) {
@@ -53,7 +54,7 @@ public class Unit : MonoBehaviour {
     }
 
     public int GetTeamId() {
-        return teamId;
+        return this.teamId;
     }
 
     public void SetTeamId(int teamId) {
@@ -61,23 +62,15 @@ public class Unit : MonoBehaviour {
     }
 
     public int GetTileId() {
-        return tileId;
+        return this.tileId;
     }
 
     public void SetTileId(int tileId) {
         this.tileId = tileId;
     }
 
-    public int GetObjectId() {
-        return objectId;
-    }
-
-    public void SetObjectId(int objectId) {
-        this.objectId = objectId;
-    }
-
     public bool HasMoved() {
-        return hasMoved;
+        return this.hasMoved;
     }
 
     public void SetHasMoved(bool moved) {
@@ -85,7 +78,7 @@ public class Unit : MonoBehaviour {
     }
 
     public bool HasAttacked() {
-        return hasAttacked;
+        return this.hasAttacked;
     }
 
     public void SetHasAttacked(bool hasAttacked) {
@@ -93,36 +86,36 @@ public class Unit : MonoBehaviour {
     }
 
     public bool IsDead() {
-        return isDead;
+        return this.isDead;
     }
 
     public int GetMovementRange() {
-        return movementRange;
+        return this.movementRange;
     }
 
     public int GetActiveLimit() {
-        return activeLimit;
+        return this.activeLimit;
     }
 
     public int GetEnergyCost() {
-        return energyCost;
+        return this.energyCost;
     }
 
     public bool Equals(Unit unit) {
         return (
-            unit.GetTeamId() == GetTeamId() &&
-            unit.GetUnitId() == GetUnitId()
+            unit.GetTeamId() == this.teamId &&
+            unit.GetUnitId() == this.unitId
         );
     }
 
     public Vector3 GetPosition() {
-        return new Vector3(transform.position.x, 0, transform.position.z);
+        return new Vector3(this._transform.position.x, 0, this._transform.position.z);
     }
 
     public void SetUnitData(UnitData data) {
         this.unitName = data.name;
         this.maxHealth = data.maxHealth;
-        this.health = this.maxHealth;
+        this.health = data.maxHealth;
         this.movementRange = data.movementRange;
         this.activeLimit = data.activeLimit;
         this.energyCost = data.energyCost;
