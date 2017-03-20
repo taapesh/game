@@ -7,6 +7,6 @@ public class HotkeyManager : MonoBehaviour {
     public int teamId;
 
     void Awake() {
-        this.gm = GameManager.Instance;    
+        this.gm = GameManager.Instance;
     }
 }

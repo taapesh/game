@@ -68,10 +68,11 @@ public class Player : MonoBehaviour {
     }
 
     public int GetUnitActiveCount(UnitData unit) {
-        if (activeUnitsMap[unit] == null) {
-            Debug.Log("LOL");
-            return 10;
+        if (activeUnitsMap.ContainsKey(unit)) {
+            return activeUnitsMap[unit];
+        } else {
+            activeUnitsMap[unit] = 0;
+            return 0;
         }
-        return 10;
     }
 }
